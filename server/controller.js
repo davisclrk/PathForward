@@ -1,6 +1,7 @@
 import User from "./models/user.js";
 import dotenv from "dotenv";
 import { Configuration, PlaidApi, Products, PlaidEnvironments } from "plaid";
+import moment from "moment";
 
 dotenv.config();
 
@@ -17,10 +18,8 @@ export const createUser = async (req, res) => {
         if (!firstName || !lastName || !email || !password || !monthlyIncome) {
             return res.status(400).json({ message: "All fields are required!" });
         }
-        console.log(email + " " + password);
         const userExists = await User.exists({ email: email });
         if (userExists) {
-          console.log("wtf");
           user = await User.findOne({ email: email });
           console.log(user.email)
             return res.status(400).json({ message: "User with this email already exists!" });
@@ -28,8 +27,6 @@ export const createUser = async (req, res) => {
 
         const user = await User.create({ firstName, lastName, email, password, monthlyIncome, budgets });
         res.status(200).json(user._id);
-        console.log("hihi");
-
     } catch (error) {
         res.status(500).json({ error: error.message });
     }
@@ -96,7 +93,7 @@ export const createLinkToken = async (req, res, next) => {
       res.json(createTokenResponse.data);
     } catch (error) {
       console.error('Error creating link token:', error.response ? error.response.data : error.message);
-      res.status(400).json({ error: 'Failed to create link token' });
+      res.status(500).json({ error: 'Failed to create link token' });
     }
 };
 
@@ -136,41 +133,75 @@ export const createAccessToken = async(req, res, next) => {
  * Get Transactions from the past month. Req must contain key for the user's id, 'userId'. Will return a list of transactions.
  * The specific fields of transactions can be found 
  */
-const getTransactions = async(req, res, next) => {
+export const getTransactions = async(req, res, next) => {
   const startDate = moment().subtract(30, 'days').format('YYYY-MM-DD');
   const endDate = moment().format('YYYY-MM-DD');
   const user = await User.findOne({_id: req.body.userId});
   if (!user) {
     return res.status(404).json({ error: 'User not found' });
   }
-  const accessToken = user.PlaidAccesssToken;;
+  const accessToken = user.plaidAccessToken;
   const configs = {
     access_token: accessToken,
     start_date : startDate,
     end_date : endDate
   };
+  console.log(configs)
   try {
     const response = await client.transactionsGet(configs);
     let transactions = response.data.transactions;
-    const total = response.data.total_transactions;
-    while (transactions.length < total) {
-      const paginated_config = {
-        access_token: accessToken,
-        start_date : startDate,
-        end_date : endDate,
-        options: {
-          offset: transactions.length
-        }
-      };
-      const paginated_response = await client.transactionsGet(paginated_config);
-      transactions = transactions.concat(paginated_response.data.transactions);
-      res.json(transactions);
-    }
-  } catch (error) {
-    console.error('Error getting transactions:', error.response ? error.response.data : error.message);
-    res.status(400).json({ error: 'Failed to get transactions' });
+    console.log(transactions, response.data.total_transactions);
+    // const total = response.data.total_transactions;
+    // while (transactions.length < total) {
+    //   const paginated_config = {
+    //     access_token: accessToken,
+    //     start_date : startDate,
+    //     end_date : endDate,
+    //     options: {
+    //       offset: transactions.length
+    //     }
+    //   };
+    //   const paginated_response = await client.transactionsGet(paginated_config);
+    //   transactions = transactions.concat(paginated_response.data.transactions);
+      res.status(200).json(transactions);
+    // } 
   }
-};
+
+
+  // let cursor = null;
+  // let hasMore = true;
+  // while (hasMore) {
+  //   const configs = {
+  //     access_token: accessToken,
+  //     start_date : startDate,
+  //     end_date : endDate
+  //   };
+  //   console.log(configs)
+  //   try {
+  //     const response = await client.transactionsGet(configs);
+  //     console.log("response", response.data.transactions, response.data.total_transactions);
+  //     let transactions = response.data.transactions;
+  //     const total = response.data.total_transactions;
+  //     while (transactions.length < total) {
+  //       const paginated_config = {
+  //         access_token: accessToken,
+  //         start_date : startDate,
+  //         end_date : endDate,
+  //         options: {
+  //           offset: transactions.length
+  //         }
+  //       };
+  //       const paginated_response = await client.transactionsGet(paginated_config);
+  //       transactions = transactions.concat(paginated_response.data.transactions);
+  //       res.status(200).json(transactions);
+  //     } 
+  //   } 
+    catch (error) {
+    console.error('Error getting transactions:', error.response ? error.response.data : error.message);
+    res.status(500).json({ error: 'Failed to get transactions' });
+    }
+  }
+// };
 
 
 
