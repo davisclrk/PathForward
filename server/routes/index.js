@@ -1,5 +1,4 @@
 import express from 'express';
-import { createUser, createLinkToken, logIn, createAccessToken, getTransactions, getInfo } from '../controller.js';
 import { createUser, createLinkToken, logIn, createAccessToken, getTransactions } from '../controller.js';
 
 const router = express.Router();
