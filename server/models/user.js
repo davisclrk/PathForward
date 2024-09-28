@@ -37,8 +37,7 @@ const userSchema = new mongoose.Schema({
         required: true
     },
     plaidAccessToken: {
-        type: String,
-        required: true
+        type: String
     },
     monthlyIncome: {
         type: Number,
