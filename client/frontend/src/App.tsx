@@ -12,8 +12,9 @@ const App: React.FC = () => {
     const fetchLinkToken = async () => {
       try {
         setIsLoading(true);
+        const userId = localStorage.getItem('userId');
         const requestBody = {
-          userId: '66f817ec7b6bd7bc7d69ccc0'
+          userId: userId
         };
         const response = await fetch("http://localhost:4000/api/createLinkToken", { method: "POST", headers: {
           'Content-Type': 'application/json'
@@ -21,6 +22,7 @@ const App: React.FC = () => {
         if (response.status === 200) {
           const data = await response.json();
           setLinkToken(data.link_token);
+          console.log("linkToken: ", data.link_token);
         } else {
           console.log("Error fetching link token not catch");
         }
@@ -31,8 +33,10 @@ const App: React.FC = () => {
       }
     };
 
-    fetchLinkToken();
-  }, []);
+    if (isAuthenticated) {
+      fetchLinkToken();
+    }
+  }, [isAuthenticated]);
 
   const handleLoginSuccess = () => {
     setIsAuthenticated(true);

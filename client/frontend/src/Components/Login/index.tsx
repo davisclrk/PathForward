@@ -28,8 +28,12 @@ const AuthScreen: React.FC<AuthScreenProps> = ({ onLoginSuccess }) => {
       body: JSON.stringify(body),
     });
     const data = await response.json();
+
     setMessage(data.message);
     if (isLogin && response.ok) {
+      const userId = data;
+      console.log("userId: ", userId);
+      localStorage.setItem('userId', userId);
       onLoginSuccess();
     }
   };
