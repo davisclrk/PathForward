@@ -76,22 +76,23 @@ export const getInfo = async (req, res, next) => {
 
 export const createLinkToken = async (req, res, next) => {
     try {
-        const configs = {
-          user: {
-            client_user_id: req.body.userId,
-          },
-          client_name: 'Plaid Connection',
-          products: PLAID_PRODUCTS.split(','),
-          country_codes: PLAID_COUNTRY_CODES.split(','),
-          language: 'en',
-        };
-    
-        const createTokenResponse = await client.linkTokenCreate(configs);
-        res.json(createTokenResponse.data);
-      } catch (error) {
-        console.error('Error creating link token:', error.response ? error.response.data : error.message);
-        res.status(400).json({ error: 'Failed to create link token' });
-      }
+      const userId = req.body.userId;
+      const configs = {
+        user: {
+          client_user_id: userId,
+        },
+        client_name: 'Plaid Connection',
+        products: PLAID_PRODUCTS.split(','),
+        country_codes: PLAID_COUNTRY_CODES.split(','),
+        language: 'en',
+      };
+  
+      const createTokenResponse = await client.linkTokenCreate(configs);
+      res.json(createTokenResponse.data);
+    } catch (error) {
+      console.error('Error creating link token:', error.response ? error.response.data : error.message);
+      res.status(400).json({ error: 'Failed to create link token' });
+    }
 };
 
 /**
@@ -117,4 +118,3 @@ export const createAccessToken = async(req, res, next) => {
     res.status(400).json({ error: 'Failed to create access token' });
   }
 };
-
