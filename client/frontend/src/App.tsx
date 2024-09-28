@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import logo from './logo.svg';
 import PlaidLinkButton from './Components/Link';
+import AuthScreen from './Components/Login';
 
 const App: React.FC = () => {
   const [linkToken, setLinkToken] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
 
   useEffect(() => {
     const fetchLinkToken = async () => {
@@ -32,19 +34,17 @@ const App: React.FC = () => {
     fetchLinkToken();
   }, []);
 
+  const handleLoginSuccess = () => {
+    setIsAuthenticated(true);
+  };
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        {isLoading ? (
-          <p>Loading...</p>
-        ) : (
-          <>
-            <p>linkToken: {linkToken}</p>
-            {linkToken && <PlaidLinkButton linkToken={linkToken} />}
-          </>
-        )}
-      </header>
+    <div>
+      {isAuthenticated ? (
+        <PlaidLinkButton linkToken={linkToken!} />
+      ) : (
+        <AuthScreen onLoginSuccess={handleLoginSuccess} />
+      )}
     </div>
   );
 }

@@ -14,7 +14,7 @@ export const createUser = async (req, res) => {
     try {
         const { firstName, lastName, email, password, monthlyIncome, budgets } = req.body;
 
-        if (!firstName || !lastName || !email || !password || !monthlyIncome || !budgets) {
+        if (!firstName || !lastName || !email || !password || !monthlyIncome) {
             return res.status(400).json({ message: "All fields are required!" });
         }
 
@@ -24,14 +24,14 @@ export const createUser = async (req, res) => {
         }
 
         const user = await User.create({ firstName, lastName, email, password, monthlyIncome, budgets });
-        res.status(200).json(user);
+        res.status(200).json(user._id);
     } catch (error) {
         res.status(500).json({ error: error.message });
     }
 }
 export const logIn = async(req, res) => {
     try {
-        const {email, password } = req.body;
+        const { email, password } = req.body;
 
         if (!email || !password) {
             return res.status(400).json({ message: "All fields are required!" });
@@ -47,7 +47,7 @@ export const logIn = async(req, res) => {
             return res.status(401).json({ message: "Invalid credentials!" });
         }
 
-        res.status(200).json(user);
+        res.status(200).json(user._id);
     } catch (error) {
         res.status(500).json({ error: error.message });
     }

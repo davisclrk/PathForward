@@ -7,8 +7,7 @@ router.get('/health', (req, res) => {
     res.json({"status": "UP"});
 });
 
-
-router.post('/logIn', logIn);
+router.post('/login', logIn);
 router.post('/createUser', createUser);
 router.post('/createLinkToken', createLinkToken); 
 router.post('/createAccessToken', createAccessToken);
