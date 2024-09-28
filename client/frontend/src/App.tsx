@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import logo from './logo.svg';
+import Navbar from './Components/navbar';
 import PlaidLinkButton from './Components/Link';
 import AuthScreen from './Components/Login';
 
@@ -46,7 +46,11 @@ const App: React.FC = () => {
   return (
     <div>
       {isAuthenticated ? (
-        <PlaidLinkButton linkToken={linkToken!} />
+        <>
+          <Navbar />
+          <PlaidLinkButton linkToken={linkToken!} />
+        </>
+        
       ) : (
         <AuthScreen onLoginSuccess={handleLoginSuccess} />
       )}
