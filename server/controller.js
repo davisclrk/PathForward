@@ -101,20 +101,28 @@ export const createLinkToken = async (req, res, next) => {
  */
 export const createAccessToken = async(req, res, next) => {
   try {
-    const response = await client.itemPublicTokenExchange({
-      public_token:req.body.public_token
-    });
-    access_token = response.data.access_token;
-    item = response.data.item;
     const user = await User.findOne({_id: req.body.userId});
     if (!user) {
       return res.status(404).json({ error: 'User not found' });
     }
+
+    if (user.plaidAccessToken) {
+      return res.status(200).json({ error: 'Access token already exists' });
+    }
+
+    const response = await client.itemPublicTokenExchange({
+      public_token:req.body.public_token
+    });
+    const access_token = response.data.access_token;
+    const item = response.data.item_id;
+    console.log('Access token: ', access_token);
+    console.log('Item ID: ', item);
     user.plaidAccessToken = access_token;
     user.plaidItemID = item;
     await user.save();
+    res.status(200).json({ access_token: access_token, item_id: item });
   } catch (error) {
     console.error('Error creating access token:', error.response ? error.response.data : error.message);
-    res.status(400).json({ error: 'Failed to create access token' });
+    res.status(500).json({ error: 'Failed to create access token' });
   }
 };
