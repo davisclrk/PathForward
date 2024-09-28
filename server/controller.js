@@ -102,7 +102,7 @@ export const createLinkToken = async (req, res, next) => {
 
 /**
  * Exchange the public token for an access token. The key for the public token should be `public_token`. Req must contain
- * key for the user's id, 'userId'.
+ * key for the user's id, 'userId'. Access token will be saved in the database.
  */
 export const createAccessToken = async(req, res, next) => {
   try {
@@ -131,3 +131,46 @@ export const createAccessToken = async(req, res, next) => {
     res.status(500).json({ error: 'Failed to create access token' });
   }
 };
+
+/**
+ * Get Transactions from the past month. Req must contain key for the user's id, 'userId'. Will return a list of transactions.
+ * The specific fields of transactions can be found 
+ */
+const getTransactions = async(req, res, next) => {
+  const startDate = moment().subtract(30, 'days').format('YYYY-MM-DD');
+  const endDate = moment().format('YYYY-MM-DD');
+  const user = await User.findOne({_id: req.body.userId});
+  if (!user) {
+    return res.status(404).json({ error: 'User not found' });
+  }
+  const accessToken = user.PlaidAccesssToken;;
+  const configs = {
+    access_token: accessToken,
+    start_date : startDate,
+    end_date : endDate
+  };
+  try {
+    const response = await client.transactionsGet(configs);
+    let transactions = response.data.transactions;
+    const total = response.data.total_transactions;
+    while (transactions.length < total) {
+      const paginated_config = {
+        access_token: accessToken,
+        start_date : startDate,
+        end_date : endDate,
+        options: {
+          offset: transactions.length
+        }
+      };
+      const paginated_response = await client.transactionsGet(paginated_config);
+      transactions = transactions.concat(paginated_response.data.transactions);
+      res.json(transactions);
+    }
+  } catch (error) {
+    console.error('Error getting transactions:', error.response ? error.response.data : error.message);
+    res.status(400).json({ error: 'Failed to get transactions' });
+  }
+};
+
+
+

@@ -1,18 +1,31 @@
 import mongoose from "mongoose";
 
+const categoryEnum = [
+    "Groceries",
+    "Transportation",
+    "Loan Payments",
+    "Bank Fees",
+    "Entertainment"
+]
+
 const budgetSchema = new mongoose.Schema({
     category: {
         type: String,
+        enum: categoryEnum,
         required: true
     },
     amount: {
-        type: Number,
+        type:Number,
         required: true
     },
     month: {
         type: String,
         required: true
-    }
+    },
+    progress: {
+        type: Number,
+        required: true
+    },
 });
 
 const userSchema = new mongoose.Schema({
