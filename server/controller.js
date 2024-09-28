@@ -17,14 +17,19 @@ export const createUser = async (req, res) => {
         if (!firstName || !lastName || !email || !password || !monthlyIncome) {
             return res.status(400).json({ message: "All fields are required!" });
         }
-
+        console.log(email + " " + password);
         const userExists = await User.exists({ email: email });
         if (userExists) {
+          console.log("wtf");
+          user = await User.findOne({ email: email });
+          console.log(user.email)
             return res.status(400).json({ message: "User with this email already exists!" });
         }
 
         const user = await User.create({ firstName, lastName, email, password, monthlyIncome, budgets });
         res.status(200).json(user._id);
+        console.log("hihi");
+
     } catch (error) {
         res.status(500).json({ error: error.message });
     }

@@ -30,7 +30,7 @@ const AuthScreen: React.FC<AuthScreenProps> = ({ onLoginSuccess }) => {
     const data = await response.json();
 
     setMessage(data.message);
-    if (isLogin && response.ok) {
+    if (response.ok) {
       const userId = data;
       console.log("userId: ", userId);
       localStorage.setItem('userId', userId);

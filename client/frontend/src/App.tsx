@@ -40,6 +40,7 @@ const App: React.FC = () => {
 
   const handleLoginSuccess = () => {
     setIsAuthenticated(true);
+    // only show plaid link after create account. we can assume users who login have already linked their plaid accounts in the past
   };
 
   return (
