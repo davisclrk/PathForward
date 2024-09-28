@@ -1,9 +1,6 @@
 import express from 'express';
-<<<<<<< HEAD
 import { createUser, createLinkToken, logIn, createAccessToken, getTransactions, getInfo } from '../controller.js';
-=======
 import { createUser, createLinkToken, logIn, createAccessToken, getTransactions } from '../controller.js';
->>>>>>> refs/remotes/origin/main
 
 const router = express.Router();
 
