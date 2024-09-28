@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import './login.css';
 
 interface AuthScreenProps {
   onLoginSuccess: () => void;
@@ -39,70 +40,70 @@ const AuthScreen: React.FC<AuthScreenProps> = ({ onLoginSuccess }) => {
   };
 
   return (
-    <div>
+    <div className="loginPage">
       <h1>{isLogin ? 'Login' : 'Create Account'}</h1>
       <form onSubmit={handleSubmit}>
-        <div>
-          <label>
-            Email:
-            <input
-              type="text"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              required
-            />
-          </label>
+        <div className="emailField">
+          <label>Email</label>
+          <input
+            type="text"
+            className="emailInput"
+            placeholder='Email'
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            required
+          />
         </div>
-        <div>
-          <label>
-            Password:
-            <input
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              required
-            />
-          </label>
+        <div className="passwordField">
+          <label>Password</label>
+          <input
+            type="password"
+            className="passwordInput"
+            placeholder='Password'
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            required
+          />
         </div>
         {!isLogin && (
           <>
-          <div>
-              <label>
-                First Name:
-                <input
-                  type="text"
-                  value={firstName}
-                  onChange={(e) => setFirstName(e.target.value)}
-                  required
-                />
-              </label>
+            <div className="firstNameField">
+              <label>First Name</label>
+              <input
+                type="text"
+                className="firstNameInput"
+                placeholder='First Name'
+                value={firstName}
+                onChange={(e) => setFirstName(e.target.value)}
+                required
+              />
             </div>
-            <div>
-              <label>
-                Last Name:
-                <input
-                  type="text"
-                  value={lastName}
-                  onChange={(e) => setLastName(e.target.value)}
-                  required
-                />
-              </label>
+            <div className="lastNameField">
+              <label>Last Name</label>
+              <input
+                type="text"
+                className="lastNameInput"
+                placeholder='Last Name'
+                value={lastName}
+                onChange={(e) => setLastName(e.target.value)}
+                required
+              />
             </div>
-            <div>
-              <label>
-                Monthly Income:
+            <div className="monthlyIncomeField">
+              <label>Monthly Income</label>
                 <input
                   type="text"
+                  className="monthlyIncomeInput"
+                  placeholder='Monthly Income'
                   value={monthlyIncome}
                   onChange={(e) => setMonthlyIncome(e.target.value)}
                 />
-              </label>
             </div>
           </>
         )}
-        <button type="submit">{isLogin ? 'Login' : 'Create Account'}</button>
+        <button className="submitBtn" type="submit">{isLogin ? 'Login' : 'Create Account'}</button>
       </form>
-      <button onClick={() => setIsLogin(!isLogin)}>
+      <button className="switchBtn" onClick={() => setIsLogin(!isLogin)}>
         {isLogin ? 'Switch to Create Account' : 'Switch to Login'}
       </button>
       {message && <p>{message}</p>}
