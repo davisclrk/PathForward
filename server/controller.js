@@ -105,18 +105,12 @@ export const createAccessToken = async(req, res, next) => {
     });
     access_token = response.data.access_token;
     item = response.data.item;
-    response.json({
-      // the 'access_token' is a private token, DO NOT pass this token to the frontend in your production environment
-      access_token: ACCESS_TOKEN,
-      item_id: ITEM_ID,
-      error: null,
-    });
     const user = await User.findOne({_id: req.body.userId});
     if (!user) {
       return res.status(404).json({ error: 'User not found' });
     }
-    user.plaidAccessToken = ACCESS_TOKEN;
-    user.plaidItemID = ITEM_ID;
+    user.plaidAccessToken = access_token;
+    user.plaidItemID = item;
     await user.save();
   } catch (error) {
     console.error('Error creating access token:', error.response ? error.response.data : error.message);
