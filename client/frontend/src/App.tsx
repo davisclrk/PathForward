@@ -74,20 +74,14 @@ const App: React.FC = () => {
             <PlaidLinkButton linkToken={linkToken!} />
             <button onClick={() => getTransactions()}>Get transaction history</button>
             <div>
-            {transactions.length > 0 ? (
               <ul>
                 {transactions.map((transaction, index) => (
                   <li key={index}>
-                    <p>{transaction.name}</p>
-                    <p>{transaction.amount}</p>
-                    <p>{transaction.date}</p>
+                    {transaction.name}: {transaction.amount} on {transaction.date}
                   </li>
                 ))}
               </ul>
-            ) : (
-              <p>No transactions found</p>
-            )}
-          </div>
+            </div>
           </>
         ) : (
           <AuthScreen onLoginSuccess={handleLoginSuccess} />

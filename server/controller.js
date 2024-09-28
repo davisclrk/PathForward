@@ -1,6 +1,6 @@
 import User from "./models/user.js";
 import dotenv from "dotenv";
-import { Configuration, PlaidApi, Products, PlaidEnvironments } from "plaid";
+import { Configuration, PlaidApi, Products, PlaidEnvironments, PaymentConsentPeriodicAlignment } from "plaid";
 import moment from "moment";
 
 dotenv.config();
@@ -146,7 +146,7 @@ export const getTransactions = async(req, res, next) => {
   if (!user) {
     return res.status(404).json({ error: 'User not found' });
   }
-  const accessToken = user.PlaidAccesssToken;;
+  const accessToken = user.plaidAccessToken;
   const configs = {
     access_token: accessToken,
     start_date : startDate,
@@ -154,11 +154,14 @@ export const getTransactions = async(req, res, next) => {
   };
   try {
     const response = await client.transactionsGet(configs);
-    let transactions = [];
-    const total = response.data.total_transactions;
-    while (transactions.length < total) {
-      for (let i = 0; i < response.data.transactions.length; i++) {
-        let curr_transaction = response.data.transactions[i];
+    let transactions = response.data.transactions;
+    const transactionsArray = [];
+
+    // const total = response.data.total_transactions;
+    // while (transactions.length < total) {
+      for (let i = 0; i < transactions.length; i++) {
+        let curr_transaction = transactions[i];
+        console.log(curr_transaction);
         let response_category = curr_transaction.personal_finance_category.detailed;
         let category;
         if (response_category === null) {
@@ -208,20 +211,10 @@ export const getTransactions = async(req, res, next) => {
           date: curr_transaction.date,
           name: curr_transaction.name
         };
-        transactions.append[transaction];
+        transactionsArray.push(transaction);
       }
-      const paginated_config = {
-        access_token: accessToken,
-        start_date : startDate,
-        end_date : endDate,
-        options: {
-          offset: transactions.length
-        }
-      };
-      const paginated_response = await client.transactionsGet(paginated_config);
-      transactions = transactions.concat(paginated_response.data.transactions);
       return res.status(200).json(transactions);
-    }
+    // }
   } catch (error) {
     console.error('Error getting transactions:', error.response ? error.response.data : error.message);
     res.status(500).json({ error: 'Failed to get transactions' });
