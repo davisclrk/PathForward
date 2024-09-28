@@ -53,7 +53,7 @@ const userSchema = new mongoose.Schema({
         type: String
     },
     plaidItemID: {
-        type: String,
+        type: String
     },
     monthlyIncome: {
         type: Number,

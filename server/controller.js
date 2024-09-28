@@ -14,24 +14,29 @@ export const createUser = async (req, res) => {
     try {
         const { firstName, lastName, email, password, monthlyIncome, budgets } = req.body;
 
-        if (!firstName || !lastName || !email || !password || !monthlyIncome || !budgets) {
+        if (!firstName || !lastName || !email || !password || !monthlyIncome) {
             return res.status(400).json({ message: "All fields are required!" });
         }
-
+        console.log(email + " " + password);
         const userExists = await User.exists({ email: email });
         if (userExists) {
+          console.log("wtf");
+          user = await User.findOne({ email: email });
+          console.log(user.email)
             return res.status(400).json({ message: "User with this email already exists!" });
         }
 
         const user = await User.create({ firstName, lastName, email, password, monthlyIncome, budgets });
-        res.status(200).json(user);
+        res.status(200).json(user._id);
+        console.log("hihi");
+
     } catch (error) {
         res.status(500).json({ error: error.message });
     }
 }
 export const logIn = async(req, res) => {
     try {
-        const {email, password } = req.body;
+        const { email, password } = req.body;
 
         if (!email || !password) {
             return res.status(400).json({ message: "All fields are required!" });
@@ -47,7 +52,7 @@ export const logIn = async(req, res) => {
             return res.status(401).json({ message: "Invalid credentials!" });
         }
 
-        res.status(200).json(user);
+        res.status(200).json(user._id);
     } catch (error) {
         res.status(500).json({ error: error.message });
     }
@@ -101,22 +106,29 @@ export const createLinkToken = async (req, res, next) => {
  */
 export const createAccessToken = async(req, res, next) => {
   try {
-    const response = await client.itemPublicTokenExchange({
-      public_token:req.body.public_token
-    });
-    access_token = response.data.access_token;
-    item = response.data.item;
     const user = await User.findOne({_id: req.body.userId});
     if (!user) {
       return res.status(404).json({ error: 'User not found' });
     }
+
+    if (user.plaidAccessToken) {
+      return res.status(200).json({ error: 'Access token already exists' });
+    }
+
+    const response = await client.itemPublicTokenExchange({
+      public_token:req.body.public_token
+    });
+    const access_token = response.data.access_token;
+    const item = response.data.item_id;
+    console.log('Access token: ', access_token);
+    console.log('Item ID: ', item);
     user.plaidAccessToken = access_token;
     user.plaidItemID = item;
     await user.save();
-    getTransactions(req, res, next);
+    res.status(200).json({ access_token: access_token, item_id: item });
   } catch (error) {
     console.error('Error creating access token:', error.response ? error.response.data : error.message);
-    res.status(400).json({ error: 'Failed to create access token' });
+    res.status(500).json({ error: 'Failed to create access token' });
   }
 };
 

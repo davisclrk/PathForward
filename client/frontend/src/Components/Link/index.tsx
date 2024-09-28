@@ -6,10 +6,20 @@ interface PlaidLinkButtonProps {
 }
 
 const PlaidLinkButton: React.FC<PlaidLinkButtonProps> = ({ linkToken }) => {
-  const onSuccess = React.useCallback((public_token: any, metadata: any) => {
-    // send public_token to your server
+  const onSuccess = React.useCallback(async(public_token: any, metadata: any) => {
+    const userId = localStorage.getItem('userId');
+    const endpoint = 'http://localhost:4000/api/createAccessToken';
+    const body = {
+      userId: userId,
+      public_token: public_token
+    };
     console.log('Public Token: ', public_token);
-    console.log('Metadata: ', metadata);
+    const response = await fetch(endpoint, {body : JSON.stringify(body), headers: {'Content-Type': 'application/json'}, method: 'POST'});
+    if (response.status === 200) {
+      console.log('Successfully created access token');
+    } else {
+      console.log('Error creating access token');
+    }
   }, []);
 
   const config = {
