@@ -1,6 +1,7 @@
 import User from "./models/user.js";
 import dotenv from "dotenv";
 import { Configuration, PlaidApi, Products, PlaidEnvironments } from "plaid";
+import moment from "moment";
 
 dotenv.config();
 
@@ -96,7 +97,7 @@ export const createLinkToken = async (req, res, next) => {
       res.json(createTokenResponse.data);
     } catch (error) {
       console.error('Error creating link token:', error.response ? error.response.data : error.message);
-      res.status(400).json({ error: 'Failed to create link token' });
+      res.status(500).json({ error: 'Failed to create link token' });
     }
 };
 
@@ -223,7 +224,7 @@ export const getTransactions = async(req, res, next) => {
     }
   } catch (error) {
     console.error('Error getting transactions:', error.response ? error.response.data : error.message);
-    res.status(400).json({ error: 'Failed to get transactions' });
+    res.status(500).json({ error: 'Failed to get transactions' });
   }
 };
 
