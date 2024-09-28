@@ -3,9 +3,22 @@ import mongoose from "mongoose";
 const categoryEnum = [
     "Groceries",
     "Transportation",
+    "Restaurants",
+    "Alchohol",
     "Loan Payments",
     "Bank Fees",
-    "Entertainment"
+    "Entertainment",
+    "Shopping",
+    "Home",
+    "Medical",
+    "Personal Care",
+    "Education",
+    "Insurance",
+    "General Services",
+    "Taxes",
+    "Travel",
+    "Rent and Utilities",
+    "Other",
 ]
 
 const budgetSchema = new mongoose.Schema({
