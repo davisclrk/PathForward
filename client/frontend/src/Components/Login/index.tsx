@@ -233,11 +233,11 @@ const AuthScreen: React.FC<AuthScreenProps> = ({ onLoginSuccess }) => {
           <button className="submitBtn" type="submit">{isLogin ? 'Login' : 'Create Account'}</button>
         </form>
         <button className="switchBtn" style = {{display: budget? 'none': 'block'}} onClick={() => setIsLogin(!isLogin)}>
-          {isLogin ? 'Switch to Create Account' : 'Switch to Login'}
+          {isLogin ? 'Create Account' : 'Login'}
         </button>
         {message && <p>{message}</p>}
         {budget && (
-          <div className="doughnut-container" style={{ height: '300px', width: '300px' }}>
+          <div className="doughnut-container" style={{ height: '300px', width: '300px', paddingBottom: '20px' }}>
             <Doughnut
               data={{
                 labels: dataEntries.map(entry => entry.category),
@@ -273,8 +273,9 @@ const AuthScreen: React.FC<AuthScreenProps> = ({ onLoginSuccess }) => {
           </div>
         )}
         {budget && (
-          <form onSubmit={handleAddEntry}>
-            <label>
+          <form onSubmit={handleAddEntry} className="entryForm">
+            <div className="formGroup">
+              <label>
               Category:
               <select value={newCategory} onChange={(e) => setNewCategory(e.target.value)} required>
                 <option value="" disabled>Select a category</option>
@@ -283,7 +284,9 @@ const AuthScreen: React.FC<AuthScreenProps> = ({ onLoginSuccess }) => {
                 ))}
               </select>
             </label>
-            <label>
+            </div>
+            <div className="formGroup">
+              <label>
               Amount:
               <input
                 type="number"
@@ -292,6 +295,7 @@ const AuthScreen: React.FC<AuthScreenProps> = ({ onLoginSuccess }) => {
                 required
               />
             </label>
+            </div>
             <button type="submit">Add Entry</button>
           </form>
         )}
