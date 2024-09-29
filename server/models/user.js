@@ -4,7 +4,7 @@ const categoryEnum = [
     "Groceries",
     "Transportation",
     "Restaurants",
-    "Alchohol",
+    "Alcohol",
     "Loan Payments",
     "Bank Fees",
     "Entertainment",

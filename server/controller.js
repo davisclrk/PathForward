@@ -141,7 +141,8 @@ export const createAccessToken = async(req, res, next) => {
  * The specific fields of transactions can be found 
  */
 export const getTransactions = async(req, res) => {
-  const startDate = moment().subtract(30, 'days').format('YYYY-MM-DD');
+  let days = req.body.days;
+  const startDate = moment().subtract(days, 'days').format('YYYY-MM-DD');
   const endDate = moment().format('YYYY-MM-DD');
   const user = await User.findOne({_id: req.body.userId});
   if (!user) {
