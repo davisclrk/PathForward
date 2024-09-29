@@ -1,5 +1,5 @@
 import express from 'express';
-import { createUser, createLinkToken, logIn, createAccessToken, getInfo } from '../controller.js';
+import { createUser, createLinkToken, logIn, createAccessToken, getTransactions } from '../controller.js';
 
 const router = express.Router();
 
@@ -11,6 +11,7 @@ router.post('/login', logIn);
 router.post('/createUser', createUser);
 router.post('/createLinkToken', createLinkToken); 
 router.post('/createAccessToken', createAccessToken);
+router.post('/getTransactions', getTransactions);
 
 // router.post('/getInfo', getInfo);
 

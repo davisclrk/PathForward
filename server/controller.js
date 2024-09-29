@@ -1,6 +1,7 @@
 import User from "./models/user.js";
 import dotenv from "dotenv";
-import { Configuration, PlaidApi, Products, PlaidEnvironments } from "plaid";
+import { Configuration, PlaidApi, Products, PlaidEnvironments, PaymentConsentPeriodicAlignment } from "plaid";
+import moment from "moment";
 
 dotenv.config();
 
@@ -96,7 +97,7 @@ export const createLinkToken = async (req, res, next) => {
       res.json(createTokenResponse.data);
     } catch (error) {
       console.error('Error creating link token:', error.response ? error.response.data : error.message);
-      res.status(400).json({ error: 'Failed to create link token' });
+      res.status(500).json({ error: 'Failed to create link token' });
     }
 };
 
@@ -118,6 +119,7 @@ export const createAccessToken = async(req, res, next) => {
     const response = await client.itemPublicTokenExchange({
       public_token:req.body.public_token
     });
+    console.log(response);
     const access_token = response.data.access_token;
     const item = response.data.item_id;
     console.log('Access token: ', access_token);
@@ -126,6 +128,7 @@ export const createAccessToken = async(req, res, next) => {
     user.plaidItemID = item;
     await user.save();
     res.status(200).json({ access_token: access_token, item_id: item });
+    console.log(access_token);
   } catch (error) {
     console.error('Error creating access token:', error.response ? error.response.data : error.message);
     res.status(500).json({ error: 'Failed to create access token' });
@@ -136,14 +139,14 @@ export const createAccessToken = async(req, res, next) => {
  * Get Transactions from the past month. Req must contain key for the user's id, 'userId'. Will return a list of transactions.
  * The specific fields of transactions can be found 
  */
-const getTransactions = async(req, res, next) => {
+export const getTransactions = async(req, res, next) => {
   const startDate = moment().subtract(30, 'days').format('YYYY-MM-DD');
   const endDate = moment().format('YYYY-MM-DD');
   const user = await User.findOne({_id: req.body.userId});
   if (!user) {
     return res.status(404).json({ error: 'User not found' });
   }
-  const accessToken = user.PlaidAccesssToken;;
+  const accessToken = user.plaidAccessToken;
   const configs = {
     access_token: accessToken,
     start_date : startDate,
@@ -152,23 +155,69 @@ const getTransactions = async(req, res, next) => {
   try {
     const response = await client.transactionsGet(configs);
     let transactions = response.data.transactions;
-    const total = response.data.total_transactions;
-    while (transactions.length < total) {
-      const paginated_config = {
-        access_token: accessToken,
-        start_date : startDate,
-        end_date : endDate,
-        options: {
-          offset: transactions.length
+    const transactionsArray = [];
+
+    // const total = response.data.total_transactions;
+    // while (transactions.length < total) {
+      for (let i = 0; i < transactions.length; i++) {
+        let curr_transaction = transactions[i];
+        console.log(curr_transaction);
+        let response_category = curr_transaction.personal_finance_category.detailed;
+        let category;
+        if (response_category === null) {
+          throw new Error('Category not found');
+        } else if (response_category.includes("GROCERIES")) {
+            category = "Groceries";
+        } else if (response_category.includes("TRANSPORTATION")) {
+            category = "Transportation";
+        } else if (response_category.includes("FOOD_AND_DRINK")) {
+            category = "Restaurants";
+        } else if (response_category.includes("BEER")) {
+          category = "Alcohol";
+        } else if (response_category.includes("LOAN")) {
+          category = "Loans Payments";
+        } else if (response_category.includes("BANK")) {
+          category = "Bank Fees";
+        } else if (response_category.includes("GAMBLING")) {
+          category = "Other";
+        } else if (response_category.includes("ENTERTAINMENT")) {
+          category = "Entertainment";
+        } else if (response_category.includes("MERCHANDISE")) {
+          category = "Shopping";
+        } else if (response_category.includes("MEDICAL")) {
+          category = "Medical";
+        } else if (response_category.includes("HOME")) {
+          category = "Home";
+        } else if (response_category.includes("PERSONAL_CARE")) {
+          category = "Personal Care";
+        } else if (response_category.includes("EDUCATION")) {
+          category = "Education";
+        } else if (response_category.includes("INSURANCE")) {
+          category = "Insurance";
+        } else if (response_category.includes("SERVICES")) {
+          category = "General Services";
+        } else if (response_category.includes("TAXES"))  {
+          category = "Taxes";
+        } else if (response_category.includes("TRAVEL")) {
+          category = "Travel";
+        } else if (response_category.includes("RENT")) {
+          category = "Rent and Utilities";
+        } else {
+          category = "Other";
         }
-      };
-      const paginated_response = await client.transactionsGet(paginated_config);
-      transactions = transactions.concat(paginated_response.data.transactions);
-      res.json(transactions);
-    }
+        const transaction = {
+          category: category,
+          amount: curr_transaction.amount,
+          date: curr_transaction.date,
+          name: curr_transaction.name
+        };
+        transactionsArray.push(transaction);
+      }
+      return res.status(200).json(transactionsArray);
+    // }
   } catch (error) {
     console.error('Error getting transactions:', error.response ? error.response.data : error.message);
-    res.status(400).json({ error: 'Failed to get transactions' });
+    res.status(500).json({ error: 'Failed to get transactions' });
   }
 };
 
