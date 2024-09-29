@@ -5,45 +5,12 @@ import AuthScreen from './Components/Login';
 import './App.css';
 
 const App: React.FC = () => {
-  const [linkToken, setLinkToken] = useState<string | null>(null);
-  const [isLoading, setIsLoading] = useState<boolean>(true);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [transactions, setTransactions] = useState<any[]>([]);
   const [categorizedSpending, setCategorizedSpending] = useState<any[]>([]);
 
-  useEffect(() => {
-    const fetchLinkToken = async () => {
-      try {
-        setIsLoading(true);
-        const userId = localStorage.getItem('userId');
-        const requestBody = {
-          userId: userId
-        };
-        const response = await fetch("http://localhost:4000/api/createLinkToken", { method: "POST", headers: {
-          'Content-Type': 'application/json'
-        }, body: JSON.stringify(requestBody) });
-        if (response.status === 200) {
-          const data = await response.json();
-          setLinkToken(data.link_token);
-          console.log("linkToken: ", data.link_token);
-        } else {
-          console.log("Error fetching link token not catch");
-        }
-      } catch (error) {
-        console.error('Error fetching link token:', error);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    if (isAuthenticated) {
-      fetchLinkToken();
-    }
-  }, [isAuthenticated]);
-
   const handleLoginSuccess = () => {
     setIsAuthenticated(true);
-    // only show plaid link after create account. we can assume users who login have already linked their plaid accounts in the past
   };
   
   const getTransactions = async () => {
@@ -98,8 +65,7 @@ const App: React.FC = () => {
         {isAuthenticated ? (
           <>
             <Navbar />
-            <div className="main-content">
-              <PlaidLinkButton linkToken={linkToken!} />
+            {/* <div className="main-content">
               <button onClick={() => getTransactions()}>Get transaction history</button>
               <div>
                 <ul>
@@ -122,7 +88,28 @@ const App: React.FC = () => {
                   </ul>
                 </div>
               </div>
+            </div> */}
+
+            <div className="graphs_container">
+              <div className="line_chart_container">
+                  <h1>
+                    Spending Habits
+                  </h1>
+
+              </div>
+              <div className="bar_charts_container">
+                <div className="bar_chart">
+                  <h1> 
+                    Targeted Spending Breakdown
+                  </h1>
+                </div>
+                <div className="bar_chart">
+                <h1>
+                  Actual Spending Breakdown
+                </h1>
+              </div>
             </div>
+              </div>
           </>
         ) : (
           <AuthScreen onLoginSuccess={handleLoginSuccess} />
