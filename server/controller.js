@@ -245,6 +245,8 @@ export const categorizeTransactions = async(req, res, next) => {
       categories[category] = amount;
     }
   }
+  console.log(categories);
+
 
   return res.status(200).json(categories);
 };

@@ -48,6 +48,7 @@
   display: block;
   flex-direction: row;
   height: 100vh;
+  background-color: rgb(225, 221, 221);
 }
 
 .navbar {
@@ -79,19 +80,21 @@
 .bar_charts_container{
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
   width: 45%;
   height: 700px;
   border: 2px blue solid; 
   text-align: center;
+  overflow: fit-content;
+  row-gap: 80px;
 }
 .bar_charts_container h1 {
   font-size: 25px;
 }
 .bar_chart{
   align-self: stretch;
-  flex: 1;
-  height: 300px;
+  height: 250px;
+  position: relative;
+  overflow: fit-content;
 }
 
 .goal-input-container {
