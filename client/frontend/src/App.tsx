@@ -8,6 +8,7 @@ const App: React.FC = () => {
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [transactions, setTransactions] = useState<any[]>([]);
+  const [categorizedSpending, setCategorizedSpending] = useState<any[]>([]);
 
   useEffect(() => {
     const fetchLinkToken = async () => {
@@ -66,6 +67,30 @@ const App: React.FC = () => {
         console.error('Error fetching transactions:', error);
       }
     }
+
+    const categorizeTransactions = async (transactions: any[]) => {
+      try {
+        const userId = localStorage.getItem('userId');
+        const requestBody = {
+          userId: userId,
+          transactions: transactions
+        };
+        console.log("categorizing transactions");
+        const response = await fetch("http://localhost:4000/api/categorizeTransactions", { method: "POST", headers: {
+          'Content-Type': 'application/json'
+        }, body: JSON.stringify(requestBody) });
+        console.log("response: ", response);
+        if (response.status === 200) {
+          const data = await response.json();
+          setCategorizedSpending(data);
+          console.log("categorized transactions: ", data);
+        } else {
+          console.log("Error categorizing transactions");
+        }
+      } catch (error) {
+        console.error('Error categorizing transactions:', error);
+      }
+    }
   
     return (
       <div>
@@ -83,7 +108,19 @@ const App: React.FC = () => {
                 ))}
               </ul>
             </div>
-          </>
+            <div>
+              <button onClick={() => categorizeTransactions(transactions)}>Categorize Transactions</button>
+              <div>
+                <ul>
+                  {Object.entries(categorizedSpending).map(([category, totalSpent], index) => (
+                    <li key={index}>
+                      {category}: {totalSpent}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            </div>
+          </div>
         ) : (
           <AuthScreen onLoginSuccess={handleLoginSuccess} />
         )}

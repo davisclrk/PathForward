@@ -25,19 +25,18 @@ const budgetSchema = new mongoose.Schema({
     category: {
         type: String,
         enum: categoryEnum,
-        required: true
+        required: true,
+        default: "Other"
     },
     amount: {
         type:Number,
-        required: true
-    },
-    month: {
-        type: String,
-        required: true
+        required: true,
+        default: 0
     },
     progress: {
         type: Number,
-        required: true
+        required: true,
+        default: 0
     },
 });
 

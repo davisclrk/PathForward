@@ -139,7 +139,7 @@ export const createAccessToken = async(req, res, next) => {
  * Get Transactions from the past month. Req must contain key for the user's id, 'userId'. Will return a list of transactions.
  * The specific fields of transactions can be found 
  */
-export const getTransactions = async(req, res, next) => {
+export const getTransactions = async(req, res) => {
   const startDate = moment().subtract(30, 'days').format('YYYY-MM-DD');
   const endDate = moment().format('YYYY-MM-DD');
   const user = await User.findOne({_id: req.body.userId});
@@ -221,5 +221,62 @@ export const getTransactions = async(req, res, next) => {
   }
 };
 
+export const categorizeTransactions = async(req, res, next) => {
+  const user = await User.findOne({_id: req.body.userId});
+  if (!user) {
+    return res.status(404).json({ error: 'User not found' });
+  }
 
+  const transactions = req.body.transactions;
+  if (!transactions) {
+    return res.status(404).json({ error: 'Transactions not found' });
+  }
 
+  const categories = {};
+  for (let i = 0; i < transactions.length; i++) {
+    let curr_transaction = transactions[i];
+    let category = curr_transaction.category;
+    let amount = curr_transaction.amount;
+
+    if (category in categories) {
+      categories[category] += amount;
+    } else {
+      categories[category] = amount;
+    }
+  }
+
+  return res.status(200).json(categories);
+};
+
+export const addBudget = async(req, res) => {
+  const user = await User.findById(req.body.userId);
+  if (!user) {
+    return res.status(404).json({ error: 'User not found' });
+  }
+  try {
+    const budget = req.body.budget;
+
+    for (const [category, amount] of Object.entries(budget)) {
+      console.log(`Category: ${category}, Amount: ${amount}`);
+      user.budgets.push({ category: category, amount: amount });
+    }
+
+    await user.save();
+    return res.status(200).json(user.budgets);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
+export const getBudget = async(req, res) => {
+  const user = await User.findById(req.body.userId);
+
+  if (!user) {
+    return res.status(404).json({ error: 'User not found' });
+  }
+  try {
+    return res.status(200).json(user.budgets);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
