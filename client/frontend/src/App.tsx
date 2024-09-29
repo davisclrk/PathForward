@@ -98,7 +98,7 @@ const App: React.FC = () => {
         {isAuthenticated ? (
           <>
             <Navbar />
-            <div className="main-content">
+            {/* <div className="main-content">
               <PlaidLinkButton linkToken={linkToken!} />
               <button onClick={() => getTransactions()}>Get transaction history</button>
               <div>
@@ -122,7 +122,28 @@ const App: React.FC = () => {
                   </ul>
                 </div>
               </div>
+            </div> */}
+
+            <div className="graphs_container">
+              <div className="line_chart_container">
+                  <h1>
+                    Spending Habits
+                  </h1>
+
+              </div>
+              <div className="bar_charts_container">
+                <div className="bar_chart">
+                  <h1> 
+                    Targeted Spending Breakdown
+                  </h1>
+                </div>
+                <div className="bar_chart">
+                <h1>
+                  Actual Spending Breakdown
+                </h1>
+              </div>
             </div>
+              </div>
           </>
         ) : (
           <AuthScreen onLoginSuccess={handleLoginSuccess} />
