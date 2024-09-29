@@ -246,7 +246,7 @@ export const categorizeTransactions = async(req, res, next) => {
     }
   }
   console.log(categories);
-
+ 
 
   return res.status(200).json(categories);
 };

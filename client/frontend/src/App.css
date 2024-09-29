@@ -47,7 +47,6 @@
 .app-container {
   display: block;
   flex-direction: row;
-  height: 100vh;
   background-color: rgb(225, 221, 221);
 }
 
@@ -73,8 +72,7 @@
 }
 .line_chart_container{
   width: 45%;
-  height: 700px;
-  border: 2px blue solid;
+  height: 550px;
   text-align: center;
 }
 .bar_charts_container{
@@ -82,7 +80,6 @@
   flex-direction: column;
   width: 45%;
   height: 700px;
-  border: 2px blue solid; 
   text-align: center;
   overflow: fit-content;
   row-gap: 80px;
@@ -98,7 +95,7 @@
 }
 
 .goal-input-container {
-  position: absolute;
+  position: fixed;
   bottom: 10px;
   right: 10px;
 }
@@ -121,6 +118,7 @@
   display: flex;
   flex-direction: column;
   align-items: flex-end;
+  background-color: #6d9179;
 }
 
 .goal-input-field {
@@ -168,23 +166,22 @@
 }
 
 .row2 {
-  /* padding: 10px;
+  /* padding: 10px; */
   padding-left: 40px;
   display: flex;
   flex-direction: column;
   align-items: left;
   width: 80%;
-  margin: 0 auto; */
+  margin: 0 auto;
   background-color:rgb(225, 221, 221);
-  border: #007bff 2px solid;
 } 
 
 .transactionsList {
   display: flex;
   justify-content: center;
   padding-left: 30px;
-  width: 100%; /* Ensure it takes the full width of the parent */
-  max-width: 1000px; /* Optionally, set a max width */
+  width: 100%; 
+  max-width: 1000px; 
   margin-top: 10px; /* Add some margin to the top */
 }
 

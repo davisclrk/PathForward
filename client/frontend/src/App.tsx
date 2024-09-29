@@ -57,12 +57,25 @@ const App: React.FC = () => {
         const data = await response3.json();
         setTransactions(data);
         const set = new Set();
+        const hm: { [key: string]: number } = {};
           for (let i = 0; i < transactions.length; i++) {
-            if(!set.has(transactions[i].category)) {
-              set.add(transactions[i].category);
-              categories.push(transactions[i].category);
+            let category = transactions[i].category;
+            if (!(category in hm)) {
+              hm[category] = transactions[i].amount;
+            } else {
+              hm[category] += transactions[i].amount;
             }
           }
+          let tempCategories = [];
+          let tempSpendingCat = [];
+          for (let key in hm) {
+            tempCategories.push(key);
+            tempSpendingCat.push({category: key, amount: hm[key]});
+          }
+          setCategories(tempCategories);
+          setActualSpendingCat(tempSpendingCat);
+
+          
           console.log("categories: ", categories);
         console.log('transaction data:', transactions);
         const requestBody2 = {
@@ -76,7 +89,7 @@ const App: React.FC = () => {
           console.log(JSON.stringify(requestBody2));
           const data2 = await response2.json();
           console.log('actaul spending:', data2);
-          setActualSpendingCat(data2);
+          // setActualSpendingCat(data2);
           console.log('actual spending data:', actualSpendingCat);
         }
       }
@@ -380,7 +393,11 @@ const App: React.FC = () => {
                     />
                   ) : ( <p>Loading...</p>
                 )}
-                <div className="row2">
+                </div>
+              </div>
+            </div>
+            <div style = {{border: '1px solid black', width: '80%', margin: '0 auto'}}></div>
+            <div className="row2">
                   <h1>Transactions</h1>
                   <div className="transactionsList">
                         <table>
@@ -389,6 +406,7 @@ const App: React.FC = () => {
                                     <th className="name">Name</th>
                                     <th className="amount">Amount</th>
                                     <th className="date">Date</th>
+                                    <th className="category">Category</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -397,22 +415,53 @@ const App: React.FC = () => {
                                         <td className="name">{transaction.name}</td>
                                         <td className="amount">{transaction.amount} USD</td>
                                         <td className="date">{transaction.date}</td>
+                                        <td className="category">{transaction.category}</td>
                                     </tr>
                                 ))}
                             </tbody>
                         </table>
                   </div>
                 </div>
-                <div className="row3">
-                  <p>hello</p>
+               <div >
+               <div className="goal-input-container">
+                  {showGoalInput && (
+                    <div className="goal-input">
+                      <input
+                        type="text"
+                        value={goal}
+                        onChange={(e) => setGoal(e.target.value)}
+                        placeholder="Enter your goal"
+                        className="goal-input-field"
+                      />
+                      <button onClick={handleAddGoal} className="goal-add-button">Add Goal</button>
+                    </div>
+                  )}
+                  <button className="add-goal-button" onClick={() => setShowGoalInput(true)}>+</button>
                 </div>
+                <div className="goals-list">
+                  <h2>Goals</h2>
+                  <ul>
+                    {goals.map((goal, index) => (
+                      <li key={index} className="goal-item">
+                        <span>{goal}</span>
+                        <button
+                          onClick={() => handleDeleteGoal(goal)}
+                          className="goal-delete-button"
+                        >
+                          Delete
+                        </button>
+                      </li>
+                    ))}
+                  </ul>
                 </div>
-              </div>
-            </div>
+
+                </div> 
+              
           </>
           ) : (
             <AuthScreen onLoginSuccess={handleLoginSuccess} />
           )}
+          
         </div>
       </div>
     );
