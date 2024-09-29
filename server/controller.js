@@ -284,3 +284,52 @@ export const getBudget = async(req, res) => {
     res.status(500).json({ error: error.message });
   }
 };
+
+export const getGoals = async(req, res) => {
+  const user = await User.findById(req.body.userId);
+
+  if (!user) {
+    return res.status(404).json({ error: 'User not found' });
+  }
+  try {
+    console.log(user.goals);
+    return res.status(200).json(user.goals);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
+export const addGoal = async(req, res) => {
+  const user = await User.findById(req.body.userId);
+
+  if (!user) {
+    return res.status(404).json({ error: 'User not found' });
+  }
+  try {
+    const goal = req.body.goal;
+    user.goals.push(goal);
+    await user.save();
+    
+    return res.status(200).json(user.goals);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
+export const deleteGoal = async(req, res) => {
+  const user = await User.findById(req.body.userId);
+
+  if (!user) {
+    return res.status(404).json({ error: 'User not found' });
+  }
+
+  try {
+    const goal = req.body.goal;
+    user.goals = user.goals.filter((g) => g !== goal);
+    await user.save();
+
+    return res.status(200).json(user.goals);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+}

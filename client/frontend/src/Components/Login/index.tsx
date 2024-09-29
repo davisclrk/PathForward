@@ -111,10 +111,6 @@ const AuthScreen: React.FC<AuthScreenProps> = ({ onLoginSuccess }) => {
     }
   }, [isPlaidLinkButtonFinished, onLoginSuccess]);
 
-  const handlePlaidLinkButtonFinish = () => {
-    setIsPlaidLinkButtonFinished(true);
-  };
-
   const onFinishCreateAccount = async (e: React.FormEvent) => {
     e.preventDefault();
     const endpoint = 'http://localhost:4000/api/addBudget';

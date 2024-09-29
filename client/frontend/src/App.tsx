@@ -8,6 +8,13 @@ const App: React.FC = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [transactions, setTransactions] = useState<any[]>([]);
   const [categorizedSpending, setCategorizedSpending] = useState<any[]>([]);
+  const [showGoalInput, setShowGoalInput] = useState(false);
+  const [goal, setGoal] = useState('');
+  const [goals, setGoals] = useState<any[]>([]);
+
+  useEffect(() => {
+    getGoals();
+  }, []);
 
   const handleLoginSuccess = () => {
     setIsAuthenticated(true);
@@ -57,6 +64,68 @@ const App: React.FC = () => {
         }
       } catch (error) {
         console.error('Error categorizing transactions:', error);
+      }
+    }
+
+    const handleAddGoal = async () => {
+      const userId = localStorage.getItem('userId');
+      const requestBody = {
+        userId: userId,
+        goal: goal
+      };
+      const response = await fetch("http://localhost:4000/api/addGoal", { method: "POST", headers: {
+        'Content-Type': 'application/json'
+      }, body: JSON.stringify(requestBody) });
+      console.log("response: ", response);
+      if (response.status === 200) {
+        const data = await response.json();
+        getGoals();
+      } else {
+        console.log("Error categorizing transactions");
+      }
+
+      console.log('Goal added:', goal);
+      setGoal('');
+      setShowGoalInput(false);
+    };
+
+    const handleDeleteGoal = async (goal: string) => {
+      const userId = localStorage.getItem('userId');
+      const requestBody = {
+        userId: userId,
+        goal: goal
+      };
+      const response = await fetch("http://localhost:4000/api/deleteGoal", { method: "POST", headers: {
+        'Content-Type': 'application/json'
+      }, body: JSON.stringify(requestBody) });
+      console.log("response: ", response);
+      if (response.status === 200) {
+        const data = await response.json();
+        getGoals();
+      } else {
+        console.log("Error deleting goal");
+      }
+    }
+
+    const getGoals = async () => {
+      try {
+        const userId = localStorage.getItem('userId');
+        const requestBody = {
+          userId: userId
+        };
+        console.log("getting goals");
+        const response = await fetch("http://localhost:4000/api/getGoals", { method: "POST", headers: {
+          'Content-Type': 'application/json'
+        }, body: JSON.stringify(requestBody) });
+        console.log("response: ", response);
+        if (response.status === 200) {
+          const data = await response.json();
+          setGoals(data);
+        } else {
+          console.log("Error fetching goals");
+        }
+      } catch (error) {
+        console.error('Error fetching goals:', error);
       }
     }
   
@@ -109,8 +178,8 @@ const App: React.FC = () => {
                 </h1>
               </div>
             </div>
-              </div>
-          </>
+          </div>
+        </>
         ) : (
           <AuthScreen onLoginSuccess={handleLoginSuccess} />
         )}

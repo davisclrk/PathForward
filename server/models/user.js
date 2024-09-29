@@ -76,6 +76,10 @@ const userSchema = new mongoose.Schema({
     experience: {
         type: Number,
         default: 0
+    },
+    goals: {
+        type: [String],
+        default: []
     }
 });
 

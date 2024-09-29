@@ -1,5 +1,5 @@
 import express from 'express';
-import { createUser, createLinkToken, logIn, createAccessToken, getTransactions, categorizeTransactions, addBudget, getBudget } from '../controller.js';
+import { createUser, createLinkToken, logIn, createAccessToken, getTransactions, categorizeTransactions, addBudget, getBudget, addGoal, getGoals, deleteGoal } from '../controller.js';
 
 const router = express.Router();
 
@@ -15,9 +15,9 @@ router.post('/getTransactions', getTransactions);
 router.post('/categorizeTransactions', categorizeTransactions);
 router.post('/addBudget', addBudget);
 router.post('/getBudget', getBudget);
-
-
-// router.post('/getInfo', getInfo);
+router.post('/addGoal', addGoal);
+router.post('/getGoals', getGoals);
+router.post('/deleteGoal', deleteGoal);
 
 
 export default router;
