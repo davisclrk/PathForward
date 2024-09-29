@@ -36,3 +36,22 @@
     transform: rotate(360deg);
   }
 }
+
+
+.app-container {
+  display: flex;
+  flex-direction: row;
+  height: 100vh;
+}
+
+.navbar {
+  width: 80px;
+  flex-shrink: 0;
+}
+
+.main-content {
+  flex-grow: 1;
+  margin-left:80px;
+  padding: 20px;
+  overflow-y: auto;
+}

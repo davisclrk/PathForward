@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import Navbar from './Components/navbar';
 import PlaidLinkButton from './Components/Link';
 import AuthScreen from './Components/Login';
+import './App.css';
 
 const App: React.FC = () => {
   const [linkToken, setLinkToken] = useState<string | null>(null);
@@ -93,34 +94,36 @@ const App: React.FC = () => {
     }
   
     return (
-      <div>
+      <div className="app-container">
         {isAuthenticated ? (
           <>
             <Navbar />
-            <PlaidLinkButton linkToken={linkToken!} />
-            <button onClick={() => getTransactions()}>Get transaction history</button>
-            <div>
-              <ul>
-                {transactions.map((transaction, index) => (
-                  <li key={index}>
-                    {transaction.category}, {transaction.name}: {transaction.amount} on {transaction.date}
-                  </li>
-                ))}
-              </ul>
+            <div className="main-content">
+              <PlaidLinkButton linkToken={linkToken!} />
+              <button onClick={() => getTransactions()}>Get transaction history</button>
+              <div>
+                <ul>
+                  {transactions.map((transaction, index) => (
+                    <li key={index}>
+                      {transaction.category}, {transaction.name}: {transaction.amount} on {transaction.date}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+              <div>
+                <button onClick={() => categorizeTransactions(transactions)}>Categorize Transactions</button>
+                <div>
+                  <ul>
+                    {Object.entries(categorizedSpending).map(([category, totalSpent], index) => (
+                      <li key={index}>
+                        {category}: {totalSpent}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              </div>
             </div>
-            <div>
-            <button onClick={() => categorizeTransactions(transactions)}>Categorize Transactions</button>
-            <div>
-              <ul>
-                {Object.entries(categorizedSpending).map(([category, totalSpent], index) => (
-                  <li key={index}>
-                    {category}: {totalSpent}
-                  </li>
-                ))}
-              </ul>
-            </div>
-          </div>
-        </>
+          </>
         ) : (
           <AuthScreen onLoginSuccess={handleLoginSuccess} />
         )}
