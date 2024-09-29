@@ -109,18 +109,18 @@ const App: React.FC = () => {
               </ul>
             </div>
             <div>
-              <button onClick={() => categorizeTransactions(transactions)}>Categorize Transactions</button>
-              <div>
-                <ul>
-                  {Object.entries(categorizedSpending).map(([category, totalSpent], index) => (
-                    <li key={index}>
-                      {category}: {totalSpent}
-                    </li>
-                  ))}
-                </ul>
-              </div>
+            <button onClick={() => categorizeTransactions(transactions)}>Categorize Transactions</button>
+            <div>
+              <ul>
+                {Object.entries(categorizedSpending).map(([category, totalSpent], index) => (
+                  <li key={index}>
+                    {category}: {totalSpent}
+                  </li>
+                ))}
+              </ul>
             </div>
           </div>
+        </>
         ) : (
           <AuthScreen onLoginSuccess={handleLoginSuccess} />
         )}
