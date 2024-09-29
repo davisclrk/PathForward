@@ -1,8 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import './login.css';
 import {Doughnut} from 'react-chartjs-2';
 import { Chart, ArcElement, Tooltip, Legend } from 'chart.js';
-
+import PlaidLinkButton from '../Link';
 
 interface AuthScreenProps {
   onLoginSuccess: () => void;
@@ -44,6 +44,9 @@ const AuthScreen: React.FC<AuthScreenProps> = ({ onLoginSuccess }) => {
   const [newCategory, setNewCategory] = useState('');
   const [newAmount, setNewAmount] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
+  const [linkToken, setLinkToken] = useState('');
+  const [showPlaidLinkButton, setShowPlaidLinkButton] = useState(false);
+  const [isPlaidLinkButtonFinished, setIsPlaidLinkButtonFinished] = useState(false);
 
   Chart.register(ArcElement, Tooltip, Legend);
 
@@ -81,6 +84,37 @@ const AuthScreen: React.FC<AuthScreenProps> = ({ onLoginSuccess }) => {
     }
   };
 
+  const fetchLinkToken = async () => {
+    try {
+      const userId = localStorage.getItem('userId');
+      const requestBody = {
+        userId: userId
+      };
+      const response = await fetch("http://localhost:4000/api/createLinkToken", { method: "POST", headers: {
+        'Content-Type': 'application/json'
+      }, body: JSON.stringify(requestBody) });
+      if (response.status === 200) {
+        const data = await response.json();
+        setLinkToken(data.link_token);
+        console.log("linkToken: ", data.link_token);
+      } else {
+        console.log("Error fetching link token not catch");
+      }
+    } catch (error) {
+      console.error('Error fetching link token:', error);
+    }
+  };
+
+  useEffect(() => {
+    if (isPlaidLinkButtonFinished) {
+      onLoginSuccess();
+    }
+  }, [isPlaidLinkButtonFinished, onLoginSuccess]);
+
+  const handlePlaidLinkButtonFinish = () => {
+    setIsPlaidLinkButtonFinished(true);
+  };
+
   const onFinishCreateAccount = async (e: React.FormEvent) => {
     e.preventDefault();
     const endpoint = 'http://localhost:4000/api/addBudget';
@@ -100,7 +134,8 @@ const AuthScreen: React.FC<AuthScreenProps> = ({ onLoginSuccess }) => {
 
     setMessage(data.message);
     if (response.ok) {
-      onLoginSuccess();
+      fetchLinkToken();
+      setShowPlaidLinkButton(true);
     }
   }
 
@@ -271,6 +306,7 @@ const AuthScreen: React.FC<AuthScreenProps> = ({ onLoginSuccess }) => {
           </div>
         ))}
         <button type="submit" style={{display: (budget) ? 'block': 'none'}} onClick={onFinishCreateAccount}>Submit Changes</button>
+        {showPlaidLinkButton && <PlaidLinkButton handleSuccess={onLoginSuccess} linkToken={linkToken} />}
       </div>
     </div>
   );
