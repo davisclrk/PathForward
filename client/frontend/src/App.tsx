@@ -21,6 +21,7 @@ const App: React.FC = () => {
   };
 
   const [dataEntries, setDataEntries] = useState<{ category: string, amount: number }[]>([]);
+  const [actualSpendingCat, setActualSpendingCat] = useState<{ category: string, amount: number }[]>([]);
 
 
   Chart.register(ArcElement, Tooltip, Legend);
@@ -42,6 +43,28 @@ const App: React.FC = () => {
         console.log('Error fetching budgets');
       }
 
+      const response3 = await fetch('http://localhost:4000/api/getTransactions', {method: 'POST', headers: {
+        'Content-Type': 'application/json'
+      }, body: JSON.stringify(requestBody)});
+      if (response3.status === 200) {
+        const data = await response3.json();
+        setTransactions(data);
+        console.log('transaction data:', transactions);
+        const requestBody2 = {
+          userId: userId,
+          transactions: data
+        };
+        const response2 = await fetch('http://localhost:4000/api/categorizeTransactions', {method: 'POST', headers: {
+          'Content-Type': 'application/json'
+        }, body: JSON.stringify(requestBody2)});
+        if (response2.status === 200) {
+          console.log(JSON.stringify(requestBody2));
+          const data2 = await response2.json();
+          console.log('actaul spending:', data2);
+          setActualSpendingCat(data);
+        }
+      }
+
     } catch (error) {
       console.error('Error fetching budgets:', error);
     }
@@ -49,7 +72,7 @@ const App: React.FC = () => {
 
   useEffect(() => {
     fetchData();
-  }, []);
+  }, [isAuthenticated]);
   
   const getTransactions = async () => {
       try {
@@ -161,90 +184,129 @@ const App: React.FC = () => {
     }
   
     return (
-      <div className="app-container">
-        {isAuthenticated ? (
-          <>
-            <Navbar />
-            {/* <div className="main-content">
-              <button onClick={() => getTransactions()}>Get transaction history</button>
-              <div>
-                <ul>
-                  {transactions.map((transaction, index) => (
-                    <li key={index}>
-                      {transaction.category}, {transaction.name}: {transaction.amount} on {transaction.date}
-                    </li>
-                  ))}
-                </ul>
-              </div>
-              <div>
-                <button onClick={() => categorizeTransactions(transactions)}>Categorize Transactions</button>
+      <div>
+        <div className="app-container">
+          {isAuthenticated ? (
+            <>
+              <Navbar />
+              {/* <div className="main-content">
+                <button onClick={() => getTransactions()}>Get transaction history</button>
                 <div>
                   <ul>
-                    {Object.entries(categorizedSpending).map(([category, totalSpent], index) => (
+                    {transactions.map((transaction, index) => (
                       <li key={index}>
-                        {category}: {totalSpent}
+                        {transaction.category}, {transaction.name}: {transaction.amount} on {transaction.date}
                       </li>
                     ))}
                   </ul>
                 </div>
-              </div>
-            </div> */}
-
-            <div className="graphs_container">
-              <div className="line_chart_container">
-                  <h1>
-                    Spending Habits
-                  </h1>
-
-              </div>
-              <div className="bar_charts_container">
-                <div className="bar_chart">
-                  <h1> 
-                    Targeted Spending Breakdown
-                  </h1>
-                  <Doughnut
-                  data={{
-                    labels: dataEntries.map(entry => entry.category),
-                    datasets: [
-                      {
-                        label: 'Budget',
-                        data: dataEntries.map(entry => entry.amount),
-                        backgroundColor: [
-                          'rgba(255, 99, 132, 0.6)',
-                          'rgba(54, 162, 235, 0.6)',
-                          'rgba(255, 206, 86, 0.6)',
-                          'rgba(75, 192, 192, 0.6)',
-                          'rgba(153, 102, 255, 0.6)',
-                          'rgba(255, 159, 64, 0.6)',
-                          'rgba(199, 199, 199, 0.6)',
-                          'rgba(83, 102, 255, 0.6)',
-                          'rgba(255, 99, 132, 0.6)',
-                          'rgba(54, 162, 235, 0.6)',
-                          'rgba(255, 206, 86, 0.6)',
-                          'rgba(75, 192, 192, 0.6)',
-                          'rgba(153, 102, 255, 0.6)',
-                          'rgba(255, 159, 64, 0.6)',
-                        ],
-                      },
-                    ],
-                  }}
-                  options={{
-                    responsive: true,
-                    maintainAspectRatio: false,
-                  }}
-                  />
+                <div>
+                  <button onClick={() => categorizeTransactions(transactions)}>Categorize Transactions</button>
+                  <div>
+                    <ul>
+                      {Object.entries(categorizedSpending).map(([category, totalSpent], index) => (
+                        <li key={index}>
+                          {category}: {totalSpent}
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
                 </div>
-                <div className="bar_chart">
-                <h1>
-                  Actual Spending Breakdown
-                </h1>
+              </div> */}
+
+              <div className="graphs_container">
+                <div className="line_chart_container">
+                    <h1>
+                      Spending Habits
+                    </h1>
+
+                </div>
+                <div className="bar_charts_container">
+                  <div className="bar_chart">
+                    <h1> 
+                      Targeted Spending Breakdown
+                    </h1>
+                    <Doughnut
+                    data={{
+                      labels: dataEntries.map(entry => entry.category),
+                      datasets: [
+                        {
+                          label: 'Budget',
+                          data: dataEntries.map(entry => entry.amount),
+                          backgroundColor: [
+                            'rgba(255, 99, 132, 0.6)',
+                            'rgba(54, 162, 235, 0.6)',
+                            'rgba(255, 206, 86, 0.6)',
+                            'rgba(75, 192, 192, 0.6)',
+                            'rgba(153, 102, 255, 0.6)',
+                            'rgba(255, 159, 64, 0.6)',
+                            'rgba(199, 199, 199, 0.6)',
+                            'rgba(83, 102, 255, 0.6)',
+                            'rgba(255, 99, 132, 0.6)',
+                            'rgba(54, 162, 235, 0.6)',
+                            'rgba(255, 206, 86, 0.6)',
+                            'rgba(75, 192, 192, 0.6)',
+                            'rgba(153, 102, 255, 0.6)',
+                            'rgba(255, 159, 64, 0.6)',
+                          ],
+                        },
+                      ],
+                    }}
+                    options={{
+                      responsive: true,
+                      maintainAspectRatio: false,
+                    }}
+                    />
+                  </div>
+                  <div className="bar_chart">
+                  <h1>
+                    Actual Spending Breakdown
+                    </h1>
+                    {actualSpendingCat ? (
+                    <Doughnut
+                    data={{
+                      labels: actualSpendingCat.map(entry => entry.category),
+                      datasets: [
+                        {
+                          label: 'Budget',
+                          data: actualSpendingCat.map(entry => entry.amount),
+                          backgroundColor: [
+                            'rgba(255, 99, 132, 0.6)',
+                            'rgba(54, 162, 235, 0.6)',
+                            'rgba(255, 206, 86, 0.6)',
+                            'rgba(75, 192, 192, 0.6)',
+                            'rgba(153, 102, 255, 0.6)',
+                            'rgba(255, 159, 64, 0.6)',
+                            'rgba(199, 199, 199, 0.6)',
+                            'rgba(83, 102, 255, 0.6)',
+                            'rgba(255, 99, 132, 0.6)',
+                            'rgba(54, 162, 235, 0.6)',
+                            'rgba(255, 206, 86, 0.6)',
+                            'rgba(75, 192, 192, 0.6)',
+                            'rgba(153, 102, 255, 0.6)',
+                            'rgba(255, 159, 64, 0.6)',
+                          ],
+                        },
+                      ],
+                    }}
+                    options={{
+                      responsive: true,
+                      maintainAspectRatio: false,
+                    }}
+                    />
+                  ) : ( <p>Loading...</p>
+                )}
+                </div>
               </div>
             </div>
-          </div>
-        </>
-        ) : (
-          <AuthScreen onLoginSuccess={handleLoginSuccess} />
-        )}
+            
+          </>
+          ) : (
+            <AuthScreen onLoginSuccess={handleLoginSuccess} />
+          )}
+        </div>
+        <div className="row2"></div>
+        <div className="row3"></div>
       </div>
     );
   }
