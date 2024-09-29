@@ -1,16 +1,23 @@
 import React, { useState, useEffect } from 'react';
 import Navbar from './Components/navbar';
-import {Doughnut} from 'react-chartjs-2';
-import { Chart, ArcElement, Tooltip, Legend } from 'chart.js';import AuthScreen from './Components/Login';
+import 'chartjs-adapter-date-fns';
+import {Doughnut, Line} from 'react-chartjs-2';
+import { Chart, LineElement, CategoryScale, LinearScale, PointElement, TimeScale, Tooltip, Legend } from 'chart.js';
 import './App.css';
+import AuthScreen from './Components/Login/index';
+
 
 const App: React.FC = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [transactions, setTransactions] = useState<any[]>([]);
+  const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [categorizedSpending, setCategorizedSpending] = useState<any[]>([]);
   const [showGoalInput, setShowGoalInput] = useState(false);
   const [goal, setGoal] = useState('');
   const [goals, setGoals] = useState<any[]>([]);
+  const [categories, setCategories] = useState<string[]>([]);
+  
+
 
   useEffect(() => {
     getGoals();
@@ -24,7 +31,7 @@ const App: React.FC = () => {
   const [actualSpendingCat, setActualSpendingCat] = useState<{ category: string, amount: number }[]>([]);
 
 
-  Chart.register(ArcElement, Tooltip, Legend);
+  Chart.register(LineElement, CategoryScale, LinearScale, PointElement, Tooltip, TimeScale, Legend);
 
   const fetchData = async () => {
     try {
@@ -49,6 +56,14 @@ const App: React.FC = () => {
       if (response3.status === 200) {
         const data = await response3.json();
         setTransactions(data);
+        const set = new Set();
+          for (let i = 0; i < transactions.length; i++) {
+            if(!set.has(transactions[i].category)) {
+              set.add(transactions[i].category);
+              categories.push(transactions[i].category);
+            }
+          }
+          console.log("categories: ", categories);
         console.log('transaction data:', transactions);
         const requestBody2 = {
           userId: userId,
@@ -61,7 +76,8 @@ const App: React.FC = () => {
           console.log(JSON.stringify(requestBody2));
           const data2 = await response2.json();
           console.log('actaul spending:', data2);
-          setActualSpendingCat(data);
+          setActualSpendingCat(data2);
+          console.log('actual spending data:', actualSpendingCat);
         }
       }
 
@@ -182,6 +198,31 @@ const App: React.FC = () => {
         console.error('Error fetching goals:', error);
       }
     }
+    const filteredTransactions = selectedCategory
+    ? transactions.filter(transaction => transaction.category === selectedCategory)
+    : transactions;
+
+  const aggregatedTransactions = filteredTransactions.reduce((acc, transaction) => {
+    const date = transaction.date;
+    if (!acc[date]) {
+      acc[date] = 0;
+    }
+    acc[date] += transaction.amount;
+    return acc;
+  }, {} as Record<string, number>);
+
+  const chartData = {
+    labels: Object.keys(aggregatedTransactions),
+    datasets: [
+      {
+        label: 'Spending Over Time',
+        data: Object.values(aggregatedTransactions),
+        fill: false,
+        borderColor: 'rgba(75, 192, 192, 1)',
+        tension: 0.1
+      }
+    ]
+  };
   
     return (
       <div>
@@ -219,6 +260,50 @@ const App: React.FC = () => {
                     <h1>
                       Spending Habits
                     </h1>
+                    <div>
+                      <label htmlFor="category-select">Select Category:</label>
+                      <select
+                        id="category-select"
+                        value={selectedCategory || ''}
+                        onChange={(e) => setSelectedCategory(e.target.value)}
+                      >
+                        <option value="">All Categories</option>
+                        {categories.map(category => (
+                          <option key={category} value={category}>
+                            {category}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+                    <Line
+                      data={chartData}
+                      options={{
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        scales: {
+                          x: {
+                            type: 'time',
+                            time: {
+                              unit: 'day',
+                              tooltipFormat: 'PP', // Format for the tooltip
+                              displayFormats: {
+                                day: 'MMM d' // Format for the x-axis labels
+                              }
+                            },
+                            title: {
+                              display: true,
+                              text: 'Date'
+                            }
+                          },
+                          y: {
+                            title: {
+                              display: true,
+                              text: 'Amount'
+                            }
+                          }
+                        }
+                      }}
+                    />
 
                 </div>
                 <div className="bar_charts_container">
