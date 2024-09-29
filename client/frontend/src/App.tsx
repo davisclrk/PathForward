@@ -5,15 +5,12 @@ import AuthScreen from './Components/Login';
 import './App.css';
 
 const App: React.FC = () => {
-  const [linkToken, setLinkToken] = useState<string | null>(null);
-  const [isLoading, setIsLoading] = useState<boolean>(true);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [transactions, setTransactions] = useState<any[]>([]);
   const [categorizedSpending, setCategorizedSpending] = useState<any[]>([]);
 
   const handleLoginSuccess = () => {
     setIsAuthenticated(true);
-    // only show plaid link after create account. we can assume users who login have already linked their plaid accounts in the past
   };
   
   const getTransactions = async () => {
@@ -68,7 +65,7 @@ const App: React.FC = () => {
         {isAuthenticated ? (
           <>
             <Navbar />
-            <div className="main-content">
+            {/* <div className="main-content">
               <button onClick={() => getTransactions()}>Get transaction history</button>
               <div>
                 <ul>
@@ -91,7 +88,28 @@ const App: React.FC = () => {
                   </ul>
                 </div>
               </div>
+            </div> */}
+
+            <div className="graphs_container">
+              <div className="line_chart_container">
+                  <h1>
+                    Spending Habits
+                  </h1>
+
+              </div>
+              <div className="bar_charts_container">
+                <div className="bar_chart">
+                  <h1> 
+                    Targeted Spending Breakdown
+                  </h1>
+                </div>
+                <div className="bar_chart">
+                <h1>
+                  Actual Spending Breakdown
+                </h1>
+              </div>
             </div>
+              </div>
           </>
         ) : (
           <AuthScreen onLoginSuccess={handleLoginSuccess} />
