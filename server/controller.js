@@ -170,7 +170,7 @@ export const getTransactions = async(req, res, next) => {
             category = "Groceries";
         } else if (response_category.includes("TRANSPORTATION")) {
             category = "Transportation";
-        } else if (response_category.includes("RESTAURANTS")) {
+        } else if (response_category.includes("FOOD_AND_DRINK")) {
             category = "Restaurants";
         } else if (response_category.includes("BEER")) {
           category = "Alcohol";
@@ -182,7 +182,7 @@ export const getTransactions = async(req, res, next) => {
           category = "Other";
         } else if (response_category.includes("ENTERTAINMENT")) {
           category = "Entertainment";
-        } else if (response_category.includes("SHOPPING")) {
+        } else if (response_category.includes("MERCHANDISE")) {
           category = "Shopping";
         } else if (response_category.includes("MEDICAL")) {
           category = "Medical";
@@ -194,7 +194,7 @@ export const getTransactions = async(req, res, next) => {
           category = "Education";
         } else if (response_category.includes("INSURANCE")) {
           category = "Insurance";
-        } else if (response_category.includes("GENERAL")) {
+        } else if (response_category.includes("SERVICES")) {
           category = "General Services";
         } else if (response_category.includes("TAXES"))  {
           category = "Taxes";
@@ -213,7 +213,7 @@ export const getTransactions = async(req, res, next) => {
         };
         transactionsArray.push(transaction);
       }
-      return res.status(200).json(transactions);
+      return res.status(200).json(transactionsArray);
     // }
   } catch (error) {
     console.error('Error getting transactions:', error.response ? error.response.data : error.message);

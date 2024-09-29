@@ -77,7 +77,7 @@ const App: React.FC = () => {
               <ul>
                 {transactions.map((transaction, index) => (
                   <li key={index}>
-                    {transaction.name}: {transaction.amount} on {transaction.date}
+                    {transaction.category}, {transaction.name}: {transaction.amount} on {transaction.date}
                   </li>
                 ))}
               </ul>
