@@ -10,7 +10,9 @@ import AuthScreen from './Components/Login/index';
 const App: React.FC = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [transactions, setTransactions] = useState<any[]>([]);
+  const [transactions6, setTransactions6] = useState<any[]>([]);
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
+  const [selectedTimeRange, setSelectedTimeRange] = useState<string | null>("Past Month");
   const [categorizedSpending, setCategorizedSpending] = useState<any[]>([]);
   const [showGoalInput, setShowGoalInput] = useState(false);
   const [goal, setGoal] = useState('');
@@ -33,11 +35,13 @@ const App: React.FC = () => {
 
   Chart.register(LineElement, CategoryScale, LinearScale, PointElement, Tooltip, TimeScale, Legend);
 
+  
   const fetchData = async () => {
     try {
       const userId = localStorage.getItem('userId');
       const requestBody = {
-        userId: userId
+        userId: userId,
+        days: 30
       };
       const response = await fetch('http://localhost:4000/api/getBudget', {method: 'POST', headers: {
         'Content-Type': 'application/json'
@@ -92,6 +96,19 @@ const App: React.FC = () => {
           // setActualSpendingCat(data2);
           console.log('actual spending data:', actualSpendingCat);
         }
+      }
+      const requestBody4 = {
+        userId: userId,
+        days: 180
+      }
+      const response4 = await fetch('http://localhost:4000/api/getTransactions', {method: 'POST', headers: {
+        'Content-Type': 'application/json'
+      }, body: JSON.stringify(requestBody4)});
+      if (response4.status === 200) {
+        console.log(JSON.stringify(requestBody4));
+        const data3 = await response4.json();
+        setTransactions6(data3);
+        console.log('transaction6 data:', transactions6);
       }
 
     } catch (error) {
@@ -222,9 +239,10 @@ const App: React.FC = () => {
         console.error('Error fetching goals:', error);
       }
     }
+    const activeTransactions = selectedTimeRange === 'Past Month' ? transactions : transactions6;
     const filteredTransactions = selectedCategory
-    ? transactions.filter(transaction => transaction.category === selectedCategory)
-    : transactions;
+    ? activeTransactions.filter(activeTransactions => activeTransactions.category === selectedCategory)
+    : activeTransactions;
 
   const aggregatedTransactions = filteredTransactions.reduce((acc, transaction) => {
     const date = transaction.date;
@@ -235,12 +253,26 @@ const App: React.FC = () => {
     return acc;
   }, {} as Record<string, number>);
 
+  const aggregatedTransactions6 = transactions6.reduce((acc, transaction) => {
+    const date = transaction.date;
+    const dateFirst = date.slice(0, -2) + '01';
+    if (!acc[dateFirst]) {
+      acc[dateFirst] = 0;
+    }
+    acc[dateFirst] += transaction.amount;
+    console.log(acc);
+    return acc;
+  }, {} as Record<string, number>);
+
   const chartData = {
-    labels: Object.keys(aggregatedTransactions),
+    labels: selectedTimeRange === 'Past Month' ? Object.keys(aggregatedTransactions)
+      : Object.keys(aggregatedTransactions6),
+
     datasets: [
       {
         label: 'Spending Over Time',
-        data: Object.values(aggregatedTransactions),
+        data: selectedTimeRange === 'Past Month' ? Object.values(aggregatedTransactions)
+        : Object.values(aggregatedTransactions6),
         fill: false,
         borderColor: 'rgba(75, 192, 192, 1)',
         tension: 0.1
@@ -299,6 +331,18 @@ const App: React.FC = () => {
                         ))}
                       </select>
                     </div>
+                    <div>
+                      <label htmlFor="category-select">Select Time Frame:</label>
+                      <select
+                        id="range-select"
+                        value={selectedTimeRange || ''}
+                        onChange={(e) => setSelectedTimeRange(e.target.value)}
+                      >
+                        <option value="Past Month">Past Month</option>
+                        <option value="Past 6 Months">Past 6 Months</option>
+                        
+                      </select>
+                    </div>
                     <Line
                       data={chartData}
                       options={{
@@ -308,10 +352,10 @@ const App: React.FC = () => {
                           x: {
                             type: 'time',
                             time: {
-                              unit: 'day',
+                              unit: selectedTimeRange === 'Past Month' ? 'day': 'month',
                               tooltipFormat: 'PP', // Format for the tooltip
                               displayFormats: {
-                                day: 'MMM d' // Format for the x-axis labels
+                                day: selectedTimeRange === 'Past Month' ? 'MMM d' : 'MMM yyyy' 
                               }
                             },
                             title: {

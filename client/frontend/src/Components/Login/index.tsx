@@ -13,7 +13,7 @@ const AuthScreen: React.FC<AuthScreenProps> = ({ onLoginSuccess }) => {
   const predefinedCategories = ["Groceries",
     "Transportation",
     "Restaurants",
-    "Alchohol",
+    "Alcohol",
     "Loan Payments",
     "Bank Fees",
     "Entertainment",

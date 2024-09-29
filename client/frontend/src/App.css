@@ -147,6 +147,11 @@
 .transactionsList tr:hover {
   background-color: #83aa90; /* Add a hover effect */
 }
+.line {
+  border: 0.9px solid #83aa90;
+  margin: 0 auto;
+  width: 80%;
+}
 
 
 .row3 {
