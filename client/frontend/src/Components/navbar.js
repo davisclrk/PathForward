@@ -1,7 +1,7 @@
 import './navbar.css';
 import homeIcon from '../Assets/homeIcon.svg';
 import personIcon from '../Assets/personIcon.svg';
-import transparentImage from '../Assets/transparent_image.png';
+
 
 function Navbar() {
     return (
@@ -10,12 +10,9 @@ function Navbar() {
                 <a href='#'>
                     <img src={homeIcon} alt="Home" />
                 </a>
-                <a href="">
+                <a href="logout">
                     <img src={personIcon} alt="Profile" />
                 </a>
-            </div>
-            <div className="bottom-image">
-                <img src={transparentImage} alt="Transparent" />
             </div>
         </div>
     );
