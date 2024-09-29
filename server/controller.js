@@ -27,6 +27,7 @@ export const createUser = async (req, res) => {
             return res.status(400).json({ message: "User with this email already exists!" });
         }
 
+        console.log("hi");
         const user = await User.create({ firstName, lastName, email, password, monthlyIncome, budgets });
         res.status(200).json(user._id);
         console.log("hihi");
@@ -256,14 +257,17 @@ export const addBudget = async(req, res) => {
   try {
     const budget = req.body.budget;
 
-    for (const [category, amount] of Object.entries(budget)) {
-      console.log(`Category: ${category}, Amount: ${amount}`);
-      user.budgets.push({ category: category, amount: amount });
+    for (const item of budget) {
+      const { category, amount } = item;
+      const parsedAmount = parseFloat(amount);
+      const parsedCategory = String(category);
+      user.budgets.push({ category: parsedCategory, amount: parsedAmount });
     }
 
     await user.save();
     return res.status(200).json(user.budgets);
   } catch (error) {
+    console.log(error.message);
     res.status(500).json({ error: error.message });
   }
 };

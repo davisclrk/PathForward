@@ -18,6 +18,7 @@ const categoryEnum = [
     "Taxes",
     "Travel",
     "Rent and Utilities",
+    "Savings",
     "Other",
 ]
 
@@ -71,7 +72,11 @@ const userSchema = new mongoose.Schema({
         type: Number,
         required: true
     },
-    budgets: [budgetSchema]
+    budgets: [budgetSchema],
+    experience: {
+        type: Number,
+        default: 0
+    }
 });
 
 const User = mongoose.model("User", userSchema);
