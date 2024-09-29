@@ -167,6 +167,17 @@ const App: React.FC = () => {
       }
     }
 
+    const handleCompleteGoal = (index: number) => {
+      const updatedGoals = [...goals];
+      updatedGoals[index].completed = true;
+      setGoals(updatedGoals);
+    
+      // Delete the goal after a delay
+      setTimeout(() => {
+        setGoals(goals => goals.filter((_, i) => i !== index));
+      }, 1000); // Adjust the delay as needed
+    };
+
     const handleAddGoal = async () => {
       const userId = localStorage.getItem('userId');
       const requestBody = {
@@ -440,7 +451,7 @@ const App: React.FC = () => {
                 </div>
               </div>
             </div>
-            <div className = "line"></div>
+            <div className="line"></div>
             <div className="row2">
                   <h1>Transactions</h1>
                   <div className="transactionsList">
@@ -466,6 +477,9 @@ const App: React.FC = () => {
                         </table>
                   </div>
                 </div>
+
+                <div className="line"></div>
+
                <div >
                <div className="goal-input-container">
                   {showGoalInput && (
@@ -490,17 +504,15 @@ const App: React.FC = () => {
                         <span>{goal}</span>
                         <button
                           onClick={() => handleDeleteGoal(goal)}
-                          className="goal-delete-button"
+                          className="goal-complete-button"
                         >
-                          Delete
+                          ✓
                         </button>
                       </li>
                     ))}
                   </ul>
                 </div>
-
-                </div> 
-              
+              </div>
           </>
           ) : (
             <AuthScreen onLoginSuccess={handleLoginSuccess} />
