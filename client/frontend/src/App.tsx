@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import Navbar from './Components/navbar';
-import PlaidLinkButton from './Components/Link';
-import AuthScreen from './Components/Login';
+import {Doughnut} from 'react-chartjs-2';
+import { Chart, ArcElement, Tooltip, Legend } from 'chart.js';import AuthScreen from './Components/Login';
 import './App.css';
 
 const App: React.FC = () => {
@@ -19,6 +19,37 @@ const App: React.FC = () => {
   const handleLoginSuccess = () => {
     setIsAuthenticated(true);
   };
+
+  const [dataEntries, setDataEntries] = useState<{ category: string, amount: number }[]>([]);
+
+
+  Chart.register(ArcElement, Tooltip, Legend);
+
+  const fetchData = async () => {
+    try {
+      const userId = localStorage.getItem('userId');
+      const requestBody = {
+        userId: userId
+      };
+      const response = await fetch('http://localhost:4000/api/getBudget', {method: 'POST', headers: {
+        'Content-Type': 'application/json'
+      }, body: JSON.stringify(requestBody)});
+      if (response.status === 200) {
+        const data = await response.json();
+        console.log('data:', data);
+        setDataEntries(data);
+      } else {
+        console.log('Error fetching budgets');
+      }
+
+    } catch (error) {
+      console.error('Error fetching budgets:', error);
+    }
+  };
+
+  useEffect(() => {
+    fetchData();
+  }, []);
   
   const getTransactions = async () => {
       try {
@@ -171,6 +202,37 @@ const App: React.FC = () => {
                   <h1> 
                     Targeted Spending Breakdown
                   </h1>
+                  <Doughnut
+                  data={{
+                    labels: dataEntries.map(entry => entry.category),
+                    datasets: [
+                      {
+                        label: 'Budget',
+                        data: dataEntries.map(entry => entry.amount),
+                        backgroundColor: [
+                          'rgba(255, 99, 132, 0.6)',
+                          'rgba(54, 162, 235, 0.6)',
+                          'rgba(255, 206, 86, 0.6)',
+                          'rgba(75, 192, 192, 0.6)',
+                          'rgba(153, 102, 255, 0.6)',
+                          'rgba(255, 159, 64, 0.6)',
+                          'rgba(199, 199, 199, 0.6)',
+                          'rgba(83, 102, 255, 0.6)',
+                          'rgba(255, 99, 132, 0.6)',
+                          'rgba(54, 162, 235, 0.6)',
+                          'rgba(255, 206, 86, 0.6)',
+                          'rgba(75, 192, 192, 0.6)',
+                          'rgba(153, 102, 255, 0.6)',
+                          'rgba(255, 159, 64, 0.6)',
+                        ],
+                      },
+                    ],
+                  }}
+                  options={{
+                    responsive: true,
+                    maintainAspectRatio: false,
+                  }}
+                  />
                 </div>
                 <div className="bar_chart">
                 <h1>
