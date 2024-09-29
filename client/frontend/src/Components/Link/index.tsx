@@ -1,11 +1,12 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { usePlaidLink } from 'react-plaid-link';
 
 interface PlaidLinkButtonProps {
     linkToken: string;
+    handleSuccess: () => void;
 }
 
-const PlaidLinkButton: React.FC<PlaidLinkButtonProps> = ({ linkToken }) => {
+const PlaidLinkButton: React.FC<PlaidLinkButtonProps> = ({ linkToken, handleSuccess }) => {
   const onSuccess = React.useCallback(async(public_token: any, metadata: any) => {
     const userId = localStorage.getItem('userId');
     const endpoint = 'http://localhost:4000/api/createAccessToken';
@@ -17,6 +18,7 @@ const PlaidLinkButton: React.FC<PlaidLinkButtonProps> = ({ linkToken }) => {
     const response = await fetch(endpoint, {body : JSON.stringify(body), headers: {'Content-Type': 'application/json'}, method: 'POST'});
     if (response.status === 200) {
       console.log('Successfully created access token');
+      handleSuccess();
     } else {
       console.log('Error creating access token');
     }
@@ -33,11 +35,13 @@ const PlaidLinkButton: React.FC<PlaidLinkButtonProps> = ({ linkToken }) => {
 
   const { open, ready } = usePlaidLink(config);
 
-  return (
-    <button type="button" onClick={() => open()} disabled={!ready}>
-      Connect a bank account
-    </button>
-  );
+  useEffect(() => {
+    if (ready) {
+      open();
+    }
+  }, [ready]);
+
+  return null;
 };
 
 export default PlaidLinkButton;
