@@ -3,7 +3,7 @@ html, body {
     padding: 0;
     width: 100%;
     height: 100%;
-    background-color:#1f3a3e;
+    background-color: #83aa90;
     background-size: 100px 50px;
 }
 
@@ -20,7 +20,7 @@ html, body {
 .loginPage {
     width: 400px;
     padding: 20px;
-    background-color: #d8dede;
+    background-color: #c0d5c7;
     border-radius: 40px;
     position: absolute;
     top: 50%;

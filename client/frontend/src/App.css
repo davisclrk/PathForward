@@ -1,3 +1,9 @@
+@import url('https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;700&family=Poppins:wght@400;500;700&family=Quicksand:wght@400;500;700&family=Baloo:wght@400;500;700&family=Nunito:wght@400;500;700&family=Rubik:wght@400;500;700&display=swap');
+
+* {
+  font-family: "Rubik", sans-serif;
+}
+
 .App {
   text-align: center;
 }
@@ -39,14 +45,14 @@
 
 
 .app-container {
-  /* display: flex;
-  flex-direction: row; */
+  display: block;
+  flex-direction: row;
   height: 100vh;
   background-color: rgb(225, 221, 221);
 }
 
 .navbar {
-  width: 80px;
+  width: 90px;
   flex-shrink: 0;
 }
 
@@ -62,7 +68,8 @@
   justify-content:space-between;
   width: 80%;
   margin: 0 auto;
-  border: 6px black solid;
+  /* border: 6px black solid; */
+  background-color:rgb(225, 221, 221);
 }
 .line_chart_container{
   width: 45%;
@@ -159,11 +166,67 @@
   border-radius: 4px;
   cursor: pointer;
 }
+
 .row2 {
-  height: 100px;
-  border: 6px black solid;
+  /* padding: 10px;
+  padding-left: 40px;
+  display: flex;
+  flex-direction: column;
+  align-items: left;
+  width: 80%;
+  margin: 0 auto; */
+  background-color:rgb(225, 221, 221);
+  border: #007bff 2px solid;
+} 
+
+.transactionsList {
+  display: flex;
+  justify-content: center;
+  padding-left: 30px;
+  width: 100%; /* Ensure it takes the full width of the parent */
+  max-width: 1000px; /* Optionally, set a max width */
+  margin-top: 10px; /* Add some margin to the top */
 }
+
+.transactionsList table {
+  width: 100%;
+  border-collapse: collapse; /* Ensure borders are collapsed */
+  margin: 0 auto; /* Center the table */
+}
+
+.transactionsList th, .transactionsList td {
+  border-bottom: 1px solid #6d9179; 
+  padding: 12px; /* Add some padding */
+  text-align: left; /* Align text to the left */
+}
+
+.transactionsList th.name, .transactionsList td.name {
+  width: 45%; /*Adjust this value as needed */
+}
+
+.transactionsList th.amount, .transactionsList td.amount {
+  width: 25%; /*Adjust this value as needed */
+}
+
+.transactionsList th.date, .transactionsList td.date {
+  width: 30%; /*Adjust this value as needed */
+}
+
+.transactionsList th {
+  /* background-color: #87ae94; Add a background color to table headers */
+  font-weight: bold; /* Make the header text bold */
+}
+
+.transactionsList tr:hover {
+  background-color: #83aa90; /* Add a hover effect */
+}
+
+
 .row3 {
-  height: 100px;
-  border: 6px black solid;
+  padding: 10px;
+  display: flex;
+  justify-content:space-between;
+  width: 80%;
+  margin: 0 auto;
+  background-color:rgb(225, 221, 221);
 }

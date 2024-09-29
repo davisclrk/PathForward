@@ -304,7 +304,6 @@ const App: React.FC = () => {
                         }
                       }}
                     />
-
                 </div>
                 <div className="bar_charts_container">
                   <div className="bar_chart">
@@ -381,17 +380,40 @@ const App: React.FC = () => {
                     />
                   ) : ( <p>Loading...</p>
                 )}
+                <div className="row2">
+                  <h1>Transactions</h1>
+                  <div className="transactionsList">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th className="name">Name</th>
+                                    <th className="amount">Amount</th>
+                                    <th className="date">Date</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {transactions && transactions.map((transaction, index) => (
+                                    <tr key={index}>
+                                        <td className="name">{transaction.name}</td>
+                                        <td className="amount">{transaction.amount} USD</td>
+                                        <td className="date">{transaction.date}</td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
+                  </div>
+                </div>
+                <div className="row3">
+                  <p>hello</p>
+                </div>
                 </div>
               </div>
             </div>
-            
           </>
           ) : (
             <AuthScreen onLoginSuccess={handleLoginSuccess} />
           )}
         </div>
-        <div className="row2"></div>
-        <div className="row3"></div>
       </div>
     );
   }
