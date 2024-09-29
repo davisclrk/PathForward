@@ -38,3 +38,16 @@
 .navbar a:hover img {
     filter: invert(75%);
 }
+
+.bottom-image{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: auto;
+    margin-bottom: 40px;
+}
+
+.bottom-image img{
+    width: 65px;
+    height: auto;
+}
